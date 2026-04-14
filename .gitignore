@@ -24,6 +24,7 @@ terraform/terraform.tfstate.backup
 dbt/target/
 dbt/dbt_packages/
 dbt/logs/
+dbt/.user.yml
 
 # ── Spark / data ───────────────────────────────────────────────────────────────
 *.parquet

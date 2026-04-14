@@ -1,7 +1,0 @@
-# Copy this file to terraform.tfvars and fill in your values.
-# terraform.tfvars is listed in .gitignore — never commit it.
-
-project_id         = "powerlifting-pipeline-jls"
-region             = "us-central1"
-location           = "US"
-service_account_id = "powerlifting-pipeline-sa"
