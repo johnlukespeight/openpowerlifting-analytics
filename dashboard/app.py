@@ -21,13 +21,22 @@ st.set_page_config(
     layout="wide",
 )
 
+def _has_streamlit_secrets() -> bool:
+    try:
+        return "gcp_service_account" in st.secrets
+    except Exception:
+        return False
+
+_use_secrets = _has_streamlit_secrets()
+
 # ── Credentials: Streamlit Cloud secrets take priority over local .env ────────
 def _get_credentials_and_project():
     # Running on Streamlit Cloud — secrets stored via the UI
-    if "gcp_service_account" in st.secrets:
-        creds = service_account.Credentials.from_service_account_info(
-            st.secrets["gcp_service_account"]
-        )
+    if _use_secrets:
+        # Streamlit Cloud stores TOML strings with literal \n — convert to real newlines
+        sa_info = dict(st.secrets["gcp_service_account"])
+        sa_info["private_key"] = sa_info["private_key"].replace("\\n", "\n")
+        creds = service_account.Credentials.from_service_account_info(sa_info)
         project = (
             st.secrets.get("GCP_PROJECT_ID")
             or st.secrets.get("BQ_PROJECT")
@@ -49,7 +58,7 @@ def _get_credentials_and_project():
 
 DATASET = (
     st.secrets.get("BQ_DATASET")
-    if "gcp_service_account" in st.secrets
+    if _use_secrets
     else os.environ.get("BQ_DATASET", "powerlifting")
 )
 
@@ -60,10 +69,9 @@ def get_bq_client():
     return bigquery.Client(project=project, credentials=creds)
 
 PROJECT = (
-    st.secrets.get("GCP_PROJECT_ID")
-    or st.secrets.get("BQ_PROJECT")
-    if "gcp_service_account" in st.secrets
-    else os.environ.get("BQ_PROJECT") or os.environ.get("GCP_PROJECT_ID")
+    (st.secrets.get("GCP_PROJECT_ID") or st.secrets.get("BQ_PROJECT"))
+    if _use_secrets
+    else (os.environ.get("BQ_PROJECT") or os.environ.get("GCP_PROJECT_ID"))
 )
 
 @st.cache_data(ttl=3600)
