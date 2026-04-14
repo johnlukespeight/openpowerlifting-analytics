@@ -1,0 +1,37 @@
+version: 2
+
+sources:
+  - name: powerlifting
+    database: "{{ env_var('BQ_PROJECT', env_var('GCP_PROJECT_ID', 'your-gcp-project-id')) }}"
+    schema: powerlifting
+    tables:
+      - name: raw_lifts
+        description: "Raw OpenPowerlifting data loaded by Spark, partitioned by lift_date"
+
+models:
+  - name: stg_powerlifting
+    description: "Cleaned and renamed view of raw_lifts. Entry point for all downstream models."
+    columns:
+      - name: athlete_name
+        description: "Athlete full name"
+        data_tests:
+          - not_null
+      - name: total_kg
+        description: "Sum of best squat + bench + deadlift"
+        data_tests:
+          - not_null
+      - name: lift_date
+        description: "Date of the competition"
+        data_tests:
+          - not_null
+      - name: federation
+        description: "Powerlifting federation (e.g. IPF, USAPL)"
+        data_tests:
+          - not_null
+      - name: equipment
+        description: "Equipment category (Raw, Wraps, Single-ply, Multi-ply)"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Raw', 'Wraps', 'Single-ply', 'Multi-ply', 'Unlimited', 'Straps']

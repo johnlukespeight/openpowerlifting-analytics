@@ -1,0 +1,3 @@
+pyspark
+python-dotenv
+google-cloud-bigquery

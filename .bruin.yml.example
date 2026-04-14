@@ -1,0 +1,10 @@
+default_environment: default
+
+environments:
+  default:
+    connections:
+      google_cloud_platform:
+        - name: "gcp-default"
+          project_id: "your-gcp-project-id"
+          service_account_file: "/absolute/path/to/service-account-key.json"
+          location: "US"

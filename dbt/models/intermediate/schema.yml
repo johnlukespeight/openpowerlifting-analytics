@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: int_completed_lifts
+    description: "Full SBD powerlifting events only, with total_category bucketing."
+    columns:
+      - name: athlete_name
+        data_tests:
+          - not_null
+      - name: total_kg
+        data_tests:
+          - not_null
+      - name: total_category
+        data_tests:
+          - not_null

@@ -1,0 +1,5 @@
+name: powerlifting-quality
+schedule: "@weekly"
+
+default_connections:
+  google_cloud_platform: "gcp-default"

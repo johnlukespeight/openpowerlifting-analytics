@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: mart_athlete_records
+    description: "Best total per athlete per weight class and equipment. All-time leaderboard."
+    columns:
+      - name: athlete_name
+        data_tests:
+          - not_null
+      - name: best_total_kg
+        data_tests:
+          - not_null
+      - name: latest_competition
+        data_tests:
+          - not_null
+
+  - name: mart_federation_stats
+    description: "Per-federation stats per year: athlete count, meet count, avg Dots score."
+    columns:
+      - name: federation
+        data_tests:
+          - not_null
+      - name: year
+        data_tests:
+          - not_null
+
+  - name: mart_weight_class_trends
+    description: "Average and max total per weight class per year. Time-series analysis."
+    columns:
+      - name: weight_class_kg
+        data_tests:
+          - not_null
+      - name: year
+        data_tests:
+          - not_null

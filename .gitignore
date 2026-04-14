@@ -1,0 +1,43 @@
+# ── Credentials & secrets ──────────────────────────────────────────────────────
+.env
+*.json                          # service account key files
+terraform/terraform.tfvars      # real GCP project values
+dbt/profiles.yml                # dbt BigQuery credentials
+
+# ── Python ─────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# ── Terraform ──────────────────────────────────────────────────────────────────
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+
+# ── dbt ────────────────────────────────────────────────────────────────────────
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+
+# ── Spark / data ───────────────────────────────────────────────────────────────
+*.parquet
+*.csv
+*.zip
+spark/jars/
+
+# ── OS / IDE ───────────────────────────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+.bruin.yml
+airflow/.env
+logs/runs
+logs/*.log
