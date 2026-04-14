@@ -13,38 +13,56 @@ from google.oauth2 import service_account
 
 load_dotenv()
 
-# ── Config ────────────────────────────────────────────────────────────────────
-PROJECT = os.environ.get("BQ_PROJECT") or os.environ.get("GCP_PROJECT_ID")
-DATASET = os.environ.get("BQ_DATASET", "powerlifting")
-KEY_FILE = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-
 st.set_page_config(
     page_title="Powerlifting Analytics",
     page_icon="🏋️",
     layout="wide",
 )
 
-missing_vars = [
-    name for name, value in {
-        "GCP_PROJECT_ID or BQ_PROJECT": PROJECT,
-        "GOOGLE_APPLICATION_CREDENTIALS": KEY_FILE,
-    }.items()
-    if not value
-]
+# ── Credentials: Streamlit Cloud secrets take priority over local .env ────────
+def _get_credentials_and_project():
+    # Running on Streamlit Cloud — secrets stored via the UI
+    if "gcp_service_account" in st.secrets:
+        creds = service_account.Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"]
+        )
+        project = (
+            st.secrets.get("GCP_PROJECT_ID")
+            or st.secrets.get("BQ_PROJECT")
+            or st.secrets["gcp_service_account"]["project_id"]
+        )
+        return creds, project
 
-if missing_vars:
-    st.error(
-        "Missing required environment variables: "
-        + ", ".join(missing_vars)
-        + ". Update your .env before launching the dashboard."
-    )
-    st.stop()
+    # Running locally — read from .env / environment
+    key_file = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    project   = os.environ.get("BQ_PROJECT") or os.environ.get("GCP_PROJECT_ID")
+    if not key_file or not project:
+        st.error(
+            "Missing credentials. Set GOOGLE_APPLICATION_CREDENTIALS and "
+            "GCP_PROJECT_ID in your .env, or add secrets in Streamlit Cloud."
+        )
+        st.stop()
+    creds = service_account.Credentials.from_service_account_file(key_file)
+    return creds, project
+
+DATASET = (
+    st.secrets.get("BQ_DATASET")
+    if "gcp_service_account" in st.secrets
+    else os.environ.get("BQ_DATASET", "powerlifting")
+)
 
 # ── BigQuery client ───────────────────────────────────────────────────────────
 @st.cache_resource
 def get_bq_client():
-    creds = service_account.Credentials.from_service_account_file(KEY_FILE)
-    return bigquery.Client(project=PROJECT, credentials=creds)
+    creds, project = _get_credentials_and_project()
+    return bigquery.Client(project=project, credentials=creds)
+
+PROJECT = (
+    st.secrets.get("GCP_PROJECT_ID")
+    or st.secrets.get("BQ_PROJECT")
+    if "gcp_service_account" in st.secrets
+    else os.environ.get("BQ_PROJECT") or os.environ.get("GCP_PROJECT_ID")
+)
 
 @st.cache_data(ttl=3600)
 def query(_client, sql: str) -> pd.DataFrame:
