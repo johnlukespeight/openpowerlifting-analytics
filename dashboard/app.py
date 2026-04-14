@@ -4,6 +4,7 @@ Streamlit app backed by BigQuery mart tables.
 """
 
 import os
+from pathlib import Path
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -11,7 +12,8 @@ from dotenv import load_dotenv
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-load_dotenv()
+# Load .env from the project root (one level above this file)
+load_dotenv(Path(__file__).parent.parent / ".env")
 
 st.set_page_config(
     page_title="Powerlifting Analytics",
