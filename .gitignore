@@ -1,8 +1,11 @@
 # ── Credentials & secrets ──────────────────────────────────────────────────────
 .env
-*.json                          # service account key files
-terraform/terraform.tfvars      # real GCP project values
-dbt/profiles.yml                # dbt BigQuery credentials
+# service account key files
+*.json
+# real GCP project values
+terraform/terraform.tfvars
+# dbt BigQuery credentials
+dbt/profiles.yml
 
 # ── Python ─────────────────────────────────────────────────────────────────────
 __pycache__/
